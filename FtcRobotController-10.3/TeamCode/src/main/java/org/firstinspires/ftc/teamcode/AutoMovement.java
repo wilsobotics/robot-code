@@ -181,8 +181,7 @@ public class AutoMovement {
 
 
         while  (!(posDone && (turningDone || !decelerate))) {
-            robot.do_instructions();
-            robot.check_vertical_pos();
+//            robot.do_instructions();
             updateOdometry();
             setRotationSpeed();
             setPositionalSpeed();
@@ -230,8 +229,8 @@ public class AutoMovement {
 
         while (Math.abs(headingError) > MAXIMUM_HEADING_ERROR) {
             updateOdometry();
-            robot.do_instructions();
-            robot.check_vertical_pos();
+//            robot.do_instructions();
+
 
             if (headingError > 0) {
                 rotationSpeed = MINIMUM_TURNING_SPEED + headingError * DECELERATION_MULTIPLIER_TURNING;

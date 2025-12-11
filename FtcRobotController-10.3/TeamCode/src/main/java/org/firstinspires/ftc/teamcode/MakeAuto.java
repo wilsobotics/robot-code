@@ -36,8 +36,7 @@ public class MakeAuto extends LinearOpMode {
                     .fillRect(robot.odo.getPosY()/25.4 - 129, -robot.odo.getPosX()/25.4 + 9, 18, 18);
             dashboard.sendTelemetryPacket(packet);
             controls();
-            robot.do_instructions();
-            robot.check_vertical_pos();
+//            robot.do_instructions();
             mecanumMovement.mecanum_drive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
             String x = Double.toString(robot.odo.getPosX());
             String y = Double.toString(robot.odo.getPosY());
@@ -130,14 +129,14 @@ public class MakeAuto extends LinearOpMode {
                 }
                 autoMovement.goToPosition(x, y, speed, heading, decelerate, cx, cy, accurate);
             } else {
-                if (instruction[1].equals("hsslides_out_auto")) {robot.hsslides_out_auto();}
-                if (instruction[1].equals("transfer_sample_auto")) {robot.grab_and_transfer_sample_auto();}
-                if (instruction[1].equals("drop_preload")) {robot.drop_preload();}
-                if (instruction[1].equals("to_pick_up_spec")) {robot.to_pick_up_spec();}
-                if (instruction[1].equals("to_clip")) {robot.to_clip();}
-                if (instruction[1].equals("grab_sample")) {robot.grab_sample();}
-                if (instruction[1].equals("let_sample")) {robot.let_sample();}
-                if (instruction[1].equals("preload_spec")) {robot.preload_spec();}
+//                if (instruction[1].equals("hsslides_out_auto")) {robot.hsslides_out_auto();}
+//                if (instruction[1].equals("transfer_sample_auto")) {robot.grab_and_transfer_sample_auto();}
+//                if (instruction[1].equals("drop_preload")) {robot.drop_preload();}
+//                if (instruction[1].equals("to_pick_up_spec")) {robot.to_pick_up_spec();}
+//                if (instruction[1].equals("to_clip")) {robot.to_clip();}
+//                if (instruction[1].equals("grab_sample")) {robot.grab_sample();}
+//                if (instruction[1].equals("let_sample")) {robot.let_sample();}
+//                if (instruction[1].equals("preload_spec")) {robot.preload_spec();}
             }
             copy_path.remove(instruction);
         }
@@ -158,35 +157,35 @@ public class MakeAuto extends LinearOpMode {
 //            String action = "ACT drop_preload";
 //            instructions.add(action);
 //        }
-        if (gamepad1.dpadLeftWasPressed()) {
-            robot.to_pick_up_spec();
-            String action = "ACT to_pick_up_spec";
-            instructions.add(action);
-        }
-        if (gamepad1.dpadRightWasPressed()) {
-            robot.to_clip();
-            String action = "ACT to_clip";
-            instructions.add(action);
-        }
-        if (gamepad1.dpadDownWasPressed()) {
-            robot.grab_sample();
-            String action = "ACT grab_sample";
-            instructions.add(action);
-        }
-        if (gamepad1.dpadUpWasPressed()) {
-            robot.hsslides_out_auto();
-            String action = "ACT hsslides_out_auto";
-            instructions.add(action);
-        }
-        if (gamepad1.leftBumperWasPressed()) {
-            robot.let_sample();
-            String action = "ACT let_sample";
-            instructions.add(action);
-        }
-        if (gamepad1.leftStickButtonWasPressed()) {
-            robot.preload_spec();
-            String action = "ACT preload_spec";
-            instructions.add(action);
-        }
+//        if (gamepad1.dpadLeftWasPressed()) {
+//            robot.to_pick_up_spec();
+//            String action = "ACT to_pick_up_spec";
+//            instructions.add(action);
+//        }
+//        if (gamepad1.dpadRightWasPressed()) {
+//            robot.to_clip();
+//            String action = "ACT to_clip";
+//            instructions.add(action);
+//        }
+//        if (gamepad1.dpadDownWasPressed()) {
+//            robot.grab_sample();
+//            String action = "ACT grab_sample";
+//            instructions.add(action);
+//        }
+//        if (gamepad1.dpadUpWasPressed()) {
+//            robot.hsslides_out_auto();
+//            String action = "ACT hsslides_out_auto";
+//            instructions.add(action);
+//        }
+//        if (gamepad1.leftBumperWasPressed()) {
+//            robot.let_sample();
+//            String action = "ACT let_sample";
+//            instructions.add(action);
+//        }
+//        if (gamepad1.leftStickButtonWasPressed()) {
+//            robot.preload_spec();
+//            String action = "ACT preload_spec";
+//            instructions.add(action);
+//        }
     }
 }

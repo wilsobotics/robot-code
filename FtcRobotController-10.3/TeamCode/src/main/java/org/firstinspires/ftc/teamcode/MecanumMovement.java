@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import static org.firstinspires.ftc.teamcode.Constants.*;
+
 
 
 public class MecanumMovement {
@@ -20,6 +22,12 @@ public class MecanumMovement {
         this.RightFrontMotor = robot.rightFront;
         this.LeftBackMotor = robot.leftBack;
         this.RightBackMotor = robot.rightBack;
+    }
+
+    public double turn_to_basket_pid(double desired_angle, double current_angle) {
+        double error = desired_angle - current_angle;
+        double k = 0.01;
+        return error * k;
     }
 
     public double convert_yaw(double yaw) {
@@ -41,10 +49,9 @@ public class MecanumMovement {
         adjustedX = joystickMagnitude * Math.cos(Math.toRadians(adjustedAngle));
         adjustedY = joystickMagnitude * Math.sin(Math.toRadians(adjustedAngle));
 
-        double drivespeed = 0.5;
-        LeftFrontMotor.setPower(- (adjustedY + adjustedX + rx) * drivespeed);
-        LeftBackMotor.setPower(- (adjustedY - adjustedX + rx) * drivespeed);
-        RightFrontMotor.setPower((adjustedY - adjustedX - rx) * drivespeed);
-        RightBackMotor.setPower((adjustedY + adjustedX - rx) * drivespeed);
+        LeftFrontMotor.setPower(- (adjustedY + adjustedX + rx) * DRIVE_SPEED);
+        LeftBackMotor.setPower(- (adjustedY - adjustedX + rx) * DRIVE_SPEED);
+        RightFrontMotor.setPower((adjustedY - adjustedX - rx) * DRIVE_SPEED);
+        RightBackMotor.setPower((adjustedY + adjustedX - rx) * DRIVE_SPEED);
     }
 }
