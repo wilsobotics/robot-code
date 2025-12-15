@@ -27,4 +27,8 @@ public class Constants {
     public static final double INTAKE_POWER = 0.5;
     public static final double BASKET_X = 0;
     public static final double BASKET_Y = 0;
+
+    public static final double KP = 0;
+    public static final double KD = 0;
+    public static final double KI = 0;
 }
