@@ -2,11 +2,13 @@ package org.firstinspires.ftc.teamcode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import static org.firstinspires.ftc.teamcode.Constants.*;
+import org.firstinspires.ftc.teamcode.PID;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 
+import java.lang.reflect.Array;
 
 
 public class AutoMovement {
@@ -26,6 +28,7 @@ public class AutoMovement {
     public double rotationSpeed, posSpeed, currentSpeed, currentAcceleration;
     public double velocity_x, velocity_y, vxR, vyR;
     public double frontLeftPP, frontRightPP, backLeftPP, backRightPP, maxMagnitude;
+    public double rotationSpeedLastError, posSpeedLastError;
 
     public double frontLeftPower, frontRightPower, backLeftPower, backRightPower;
     public double desiredOrientation, desiredX, desiredY, desiredSpeed, nextCheckpointX, nextCheckpointY;
@@ -47,30 +50,38 @@ public class AutoMovement {
     }
 
 
-    public void setRotationSpeed() {
+    public void setRotationSpeed(ElapsedTime timer) {
         double a = 1;
+        PID PID = new PID();
+        double value_to_pid = 0.0;
         if (accurate) {a = 0.5;}
         if (headingError> 0) {
-            rotationSpeed = Math.max(headingError * HEADING_CORRECTION_SPEED, MINIMUM_ROTATIONAL_SPEED);
+
+            value_to_pid = Math.max(headingError * HEADING_CORRECTION_SPEED, MINIMUM_ROTATIONAL_SPEED);
         } else {
-            rotationSpeed = Math.min(headingError * HEADING_CORRECTION_SPEED, -MINIMUM_ROTATIONAL_SPEED);
+            value_to_pid = Math.min(headingError * HEADING_CORRECTION_SPEED, -MINIMUM_ROTATIONAL_SPEED);
         }
         if (Math.abs(headingError) < MAXIMUM_HEADING_ERROR*a) {
             turningDone = true;
             if (headingError> 0) {
-                rotationSpeed = Math.max(headingError * HEADING_CORRECTION_SPEED, MINIMUM_HEADING_CORRECTION_SPEED);
+                value_to_pid = Math.max(headingError * HEADING_CORRECTION_SPEED, MINIMUM_HEADING_CORRECTION_SPEED);
             } else {
-                rotationSpeed = Math.min(headingError * HEADING_CORRECTION_SPEED, -MINIMUM_HEADING_CORRECTION_SPEED);
+                value_to_pid = Math.min(headingError * HEADING_CORRECTION_SPEED, -MINIMUM_HEADING_CORRECTION_SPEED);
             }
         }
+        Double[] pidOutput = PID.pidValue(value_to_pid, rotationSpeed, timer, rotationSpeedLastError);
+        rotationSpeed = pidOutput[0];
+        rotationSpeedLastError = pidOutput[1];
     }
 
     public double calculateSpeedWithDeceleration(double max_speed, double decel_length, double distance, double multiplier, double min_speed) {
         return Math.max(max_speed - ((decel_length - distance) / decel_length) * multiplier, min_speed*max_speed);
     }
 
-    public void setPositionalSpeed() {
+    public void setPositionalSpeed(ElapsedTime timer) {
         posSpeed = desiredSpeed;
+        PID PID = new PID();
+        double value_to_pid = 0.0;
         double min;
         if (accurate) {
             min = MINIMUM_SPEED_ACCURATE;
@@ -78,10 +89,10 @@ public class AutoMovement {
             min = MINIMUM_SPEED;
         }
         if (distance < DECELERATION_LENGTH && decelerate) {
-            posSpeed = calculateSpeedWithDeceleration(desiredSpeed, DECELERATION_LENGTH, distance, DECELERATION_MULTIPLIER_POSITIONAL, min);
+            value_to_pid = calculateSpeedWithDeceleration(desiredSpeed, DECELERATION_LENGTH, distance, DECELERATION_MULTIPLIER_POSITIONAL, min);
         }
         if (distanceToC < DECELERATION_LENGTH) {
-            posSpeed = calculateSpeedWithDeceleration(desiredSpeed, DECELERATION_LENGTH, distanceToC, DECELERATION_MULTIPLIER_POSITIONAL, min);
+            value_to_pid = calculateSpeedWithDeceleration(desiredSpeed, DECELERATION_LENGTH, distanceToC, DECELERATION_MULTIPLIER_POSITIONAL, min);
         }
         double max = MAXIMUM_DISTANCE;
         if (!decelerate) {
@@ -90,6 +101,9 @@ public class AutoMovement {
         if (accurate) {
             max /= 2;
         }
+        Double[] pidOutput = PID.pidValue(value_to_pid, posSpeed, timer, posSpeedLastError);
+        posSpeed = pidOutput[0];
+        posSpeedLastError = pidOutput[1];
         if (distance < max || posDone) {
             posDone = true;
             if (decelerate) {
@@ -179,12 +193,13 @@ public class AutoMovement {
         turningDone = false;
         posDone = false;
 
+        ElapsedTime timer = new ElapsedTime();
 
         while  (!(posDone && (turningDone || !decelerate))) {
 //            robot.do_instructions();
             updateOdometry();
-            setRotationSpeed();
-            setPositionalSpeed();
+            setRotationSpeed(timer);
+            setPositionalSpeed(timer);
             setWheelSpeeds();
             TelemetryPacket packet = new TelemetryPacket();
             packet.put("Speed", currentSpeed);
