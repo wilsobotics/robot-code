@@ -1,12 +1,6 @@
-import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import dev.nextftc.bindings.BindingManager
 import dev.nextftc.bindings.button
-import dev.nextftc.core.commands.delays.Delay
-import dev.nextftc.core.commands.groups.ParallelDeadlineGroup
-import dev.nextftc.core.commands.groups.ParallelRaceGroup
-import dev.nextftc.core.commands.groups.SequentialGroup
-import dev.nextftc.core.commands.utility.LambdaCommand
 import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.ftc.Gamepads
@@ -17,13 +11,12 @@ import dev.nextftc.hardware.driving.MecanumDriverControlled
 import dev.nextftc.hardware.impl.Direction
 import dev.nextftc.hardware.impl.IMUEx
 import dev.nextftc.hardware.impl.MotorEx
-import kotlin.time.Duration.Companion.milliseconds
 
 @TeleOp(name = "NextFTC TeleOp")
 class TeleOpProgram : NextFTCOpMode() {
     init {
         addComponents(
-            SubsystemComponent(Flywheel),
+            SubsystemComponent(Shooter, Transfer),
             BulkReadComponent,
             BindingsComponent
         )
@@ -33,6 +26,8 @@ class TeleOpProgram : NextFTCOpMode() {
     private val backLeftMotor = MotorEx("back_left").brakeMode().reversed()
     private val backRightMotor = MotorEx("back_right").brakeMode()
     private val imu = IMUEx("imu", Direction.LEFT, Direction.FORWARD).zeroed()
+    private val evanResult = Evan.EvanResult()
+
     override fun onStartButtonPressed() {
         val driverControlled = MecanumDriverControlled(
             frontLeftMotor,
@@ -46,18 +41,33 @@ class TeleOpProgram : NextFTCOpMode() {
         )
         driverControlled()
 
-        val shoot = SequentialGroup(Door.open, Delay(300.milliseconds), Door.close)
-            .requires(Door)
-            .setInterruptible(false)
+        BindingManager.layer = "intake"
 
-        Flywheel.setRPM(1500.0)
+        button { BindingManager.layer == "shooting"}
+            .whenBecomesTrue { Transfer.initialize() }
+            .whenTrue { Shooter.flywheelRPM(1500.0) }
+        button { BindingManager.layer == "intake"}
+            .whenBecomesTrue {
+                Shooter.flywheelRPM(0.0)
+                Transfer.intake
+            }
+
         button { gamepad1.b }
-            .whenBecomesTrue { shoot }
+            .inLayer("shooting")
+            .whenBecomesTrue {
+                Transfer.shoot
+                BindingManager.layer = "intake"
+            }
+            .inLayer("intake")
+            .whenBecomesTrue { BindingManager.layer = "shooting" }
     }
 
     override fun onUpdate() {
         super.onUpdate()
         BindingManager.update()
+        Evan.calculateEvan(tY, tX, sY, sX, angle, rYV, rXV, evanResult)
+        Shooter.hoodAngle(40.0)
+        Shooter.turretAngle(0.0)
     }
 
     override fun onStop() {
