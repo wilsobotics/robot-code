@@ -7,6 +7,7 @@ const val TARGET_HEIGHT = 0.85
 const val SHOOTER_HEIGHT = 0
 const val GRAVITY = 9.81
 const val MAX_SHOOTER_SPEED = 10 // ms-1
+const val LAUNCH_LATENCY = 0.25
 
 data class Vector2D(
     var x: Double,
@@ -28,7 +29,7 @@ object SotmMoksh {
         T: Double,
         dz: Double
     ): Double? {
-        if (A * T*T < dz*dz) return null
+        if (A * T*T <= dz*dz) return null
 
         val inner = dz*dz + A*T*T
         if (inner < 0.0) {
@@ -52,9 +53,14 @@ object SotmMoksh {
     ): Boolean {
         val dz = TARGET_HEIGHT - SHOOTER_HEIGHT
 
+        val predShooterPos = Vector2D(
+            shooterPos.x + rv.x*LAUNCH_LATENCY,
+            shooterPos.y + rv.y*LAUNCH_LATENCY
+        )
+
         val d = Vector2D(
-            targetPos.x - shooterPos.x,
-            targetPos.y - shooterPos.y
+            targetPos.x - predShooterPos.x,
+            targetPos.y - predShooterPos.y
         )
 
         val A = d.x*d.x + d.y*d.y
