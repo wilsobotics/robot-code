@@ -7,7 +7,7 @@ const val TARGET_HEIGHT = 0.85
 const val SHOOTER_HEIGHT = 0
 const val GRAVITY = 9.81
 const val MAX_SHOOTER_SPEED = 10 // ms-1
-const val LAUNCH_LATENCY = 0.25
+const val LAUNCH_LATENCY = 0
 
 data class Vector2D(
     var x: Double,
