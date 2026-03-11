@@ -13,24 +13,23 @@ object Transfer : Subsystem {
     val door = ServoEx("door")
 
     val intake = SequentialGroup(
-        SetPower(frontRollers, 0.9),
-        SetPower(backRollers, 0.3),
-        SetPosition(door, 0.0)
+        SetPower(frontRollers, KtConstants.INTAKE_ACTIVE_POWER),
+        SetPower(backRollers, KtConstants.TRANSFER_RESTING_POWER),
+        SetPosition(door, KtConstants.DOOR_CLOSE)
     ) .setInterruptible(true)
         .requires(this)
 
     val shoot = SequentialGroup(
-        SetPower(frontRollers, 0.9),
-        SetPower(backRollers, 0.9),
-        SetPosition(door, 1.0),
-        Delay(0.3)
+        SetPower(frontRollers, KtConstants.INTAKE_ACTIVE_POWER),
+        SetPower(backRollers, KtConstants.TRANSFER_ACTIVE_POWER),
+        SetPosition(door, KtConstants.DOOR_OPEN),
     )
         .requires(this)
         .setInterruptible(false)
 
     override fun initialize() {
-        SetPower(frontRollers, 0.3)
-        SetPower(backRollers, 0.3)
-        SetPosition(door, 0.0)
+        SetPower(frontRollers, KtConstants.INTAKE_RESTING_POWER)
+        SetPower(backRollers, KtConstants.TRANSFER_RESTING_POWER)
+        SetPosition(door, KtConstants.DOOR_CLOSE)
     }
 }

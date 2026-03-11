@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.Odometry;
 
 
 public class Constants {
@@ -49,9 +48,6 @@ public class Constants {
             .yVelocity(yVelocity);
 
     public static Follower createFollower(HardwareMap hardwareMap) {
-        Odometry odo = new Odometry(hardwareMap);
-
-
         return new FollowerBuilder(followerConstants, hardwareMap)
                 .pinpointLocalizer(localizerConstants)
                 .mecanumDrivetrain(drivetrainConstants)

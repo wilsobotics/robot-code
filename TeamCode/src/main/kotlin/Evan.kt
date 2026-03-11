@@ -16,8 +16,8 @@ object Evan {
     )
 
     fun calculateEvan (
-        targetY: Double, targetX: Double,
-        shooterY: Double, shooterX: Double,
+        targetHeight: Double, targetX: Double, targetY: Double,
+        shooterHeight: Double, shooterX: Double, shooterY: Double,
         angle: Double,
         robotYV: Double, robotXV: Double,
         result: EvanResult
