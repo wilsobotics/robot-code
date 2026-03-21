@@ -18,10 +18,11 @@
 import java.util.regex.Pattern
 
 apply plugin: 'com.android.application'
+apply plugin: 'dev.frozenmilk.sinister.sloth.load'
 
 android {
 
-    compileSdkVersion 30
+    compileSdkVersion 36
 
     signingConfigs {
         release {

@@ -14,22 +14,26 @@ object Transfer : Subsystem {
 
     val intake = SequentialGroup(
         SetPower(frontRollers, KtConstants.INTAKE_ACTIVE_POWER),
-        SetPower(backRollers, KtConstants.TRANSFER_RESTING_POWER),
+        SetPower(backRollers, 0.0),
         SetPosition(door, KtConstants.DOOR_CLOSE)
     ) .setInterruptible(true)
         .requires(this)
 
     val shoot = SequentialGroup(
         SetPower(frontRollers, KtConstants.INTAKE_ACTIVE_POWER),
-        SetPower(backRollers, KtConstants.TRANSFER_ACTIVE_POWER),
+        SetPower(backRollers, -KtConstants.TRANSFER_ACTIVE_POWER),
         SetPosition(door, KtConstants.DOOR_OPEN),
     )
         .requires(this)
         .setInterruptible(false)
 
-    override fun initialize() {
-        SetPower(frontRollers, KtConstants.INTAKE_RESTING_POWER)
-        SetPower(backRollers, KtConstants.TRANSFER_RESTING_POWER)
+    val rest = SequentialGroup(
+        SetPower(frontRollers, KtConstants.INTAKE_RESTING_POWER),
+        SetPower(backRollers, KtConstants.TRANSFER_RESTING_POWER),
         SetPosition(door, KtConstants.DOOR_CLOSE)
+    )
+
+    override fun initialize() {
+        rest()
     }
 }

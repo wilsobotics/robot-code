@@ -7,6 +7,9 @@
 buildscript {
     repositories {
         mavenCentral()
+        maven {
+            url "https://repo.dairy.foundation/releases"
+        }
         google()
     }
     dependencies {
@@ -14,6 +17,7 @@ buildscript {
         // Note for FTC Teams: Do not modify this yourself.
         classpath 'com.android.tools.build:gradle:8.11.2'
         classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.21'
+        classpath "dev.frozenmilk:Load:0.2.4"
     }
 }
 

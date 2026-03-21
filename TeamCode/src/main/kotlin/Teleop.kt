@@ -1,15 +1,18 @@
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import dev.nextftc.bindings.BindingManager
 import dev.nextftc.bindings.button
+import dev.nextftc.control.KineticState
 import dev.nextftc.core.commands.delays.Delay
+import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.ftc.Gamepads
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
-import dev.nextftc.hardware.impl.MotorEx
 import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.PedroDriverControlled
+import dev.nextftc.hardware.controllable.RunToVelocity
+import dev.nextftc.hardware.powerable.SetPower
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 
 
@@ -34,22 +37,33 @@ class TeleOpProgram : NextFTCOpMode() {
         driverControlled()
         BindingManager.layer = "intake"
 
+        val shoot = SequentialGroup(
+        Transfer.shoot,
+        Delay(1.0),
+        Transfer.rest,
+        )
+
         button { BindingManager.layer == "pre_shoot"}
-            .whenBecomesTrue { Transfer.initialize() }
-            .whenTrue { Shooter.pre_shoot() }
+//            .whenBecomesTrue { Transfer.rest() }
+//            .whenTrue { Shooter.preShoot() }
 
         button { BindingManager.layer == "intake"}
             .whenBecomesTrue {
-                Shooter.flywheel.power = 0.0
-                Transfer.intake
+                Transfer.intake()
             }
 
-        button {Shooter.can_shoot }
-            .whenBecomesTrue { Transfer.shoot }
-            .whenBecomesFalse {
-                Transfer.initialize()
-                BindingManager.layer = "intake"
+        button { gamepad1.x }
+            .whenBecomesTrue {
+                Shooter.highVTest()
             }
+            .whenBecomesFalse { Shooter.lowVTest() }
+
+//        button {Shooter.canShoot() }
+//            .whenBecomesTrue { Transfer.shoot() }
+//            .whenBecomesFalse {
+//                Transfer.initialize()
+//                BindingManager.layer = "intake"
+//            }
 
         button { gamepad1.a }
             .inLayer("pre_shoot")
@@ -59,9 +73,8 @@ class TeleOpProgram : NextFTCOpMode() {
 
         button { gamepad1.b }
             .whenBecomesTrue {
-                Transfer.shoot
-                Delay(0.3)
-                Transfer.initialize()
+                shoot()
+                BindingManager.layer = "pre_shoot"
             }
     }
 
