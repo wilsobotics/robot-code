@@ -9,7 +9,7 @@ class KtConstants {
         const val SHOOTER_HEIGHT = 15.5
         const val FAR_HOOD_ANGLE = 40.0
         const val TRANSFER_ACTIVE_POWER = 0.8
-        const val TRANSFER_RESTING_POWER = 0.4
+        const val TRANSFER_RESTING_POWER = 0.0
         const val INTAKE_ACTIVE_POWER = 0.8
         const val INTAKE_RESTING_POWER = 0.1
         const val DOOR_CLOSE = 0.33

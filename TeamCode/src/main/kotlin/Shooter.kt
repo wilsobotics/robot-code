@@ -62,7 +62,7 @@ object Shooter : Subsystem {
     }
 
     val preShoot = LambdaCommand ()
-        .setStart {
+        .setExecute {
             val flywheelPower = flywheelController.calculate(KineticState(0.0, flywheel.velocity))
             flywheel.power = Math.max(Math.min(flywheelPower, 1.0), -1.0)
         }
@@ -73,7 +73,7 @@ object Shooter : Subsystem {
         }
 
     val powerTurret = LambdaCommand ()
-        .setStart {
+        .setExecute {
             val turretPower = turretController.calculate(turretEncoder.state)
             turret.power = turretPower
             turret2.power = turretPower
