@@ -1,3 +1,4 @@
+import com.pedropathing.geometry.Pose
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import dev.nextftc.bindings.BindingManager
 import dev.nextftc.bindings.button
@@ -10,14 +11,15 @@ import dev.nextftc.ftc.Gamepads
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
 import dev.nextftc.extensions.pedro.PedroComponent
+import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.extensions.pedro.PedroDriverControlled
 import dev.nextftc.hardware.controllable.RunToVelocity
 import dev.nextftc.hardware.powerable.SetPower
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 
 
-@TeleOp(name = "NextFTC TeleOp")
-class TeleOpProgram : NextFTCOpMode() {
+@TeleOp(name = "NextFTC BLUE TeleOp")
+class BlueTeleop : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(Shooter, Transfer),
@@ -28,35 +30,39 @@ class TeleOpProgram : NextFTCOpMode() {
     }
 
     override fun onStartButtonPressed() {
+        KtConstants.GOAL_X = -30.0
+        KtConstants.GOAL_Y = 160.0
+        follower.setStartingPose(Pose(64.5, 7.5))
         val driverControlled = PedroDriverControlled(
             Gamepads.gamepad1.leftStickY,
             Gamepads.gamepad1.leftStickX,
-            Gamepads.gamepad1.rightStickX
+            Gamepads.gamepad1.rightStickX,
+            false
         )
 
         driverControlled()
         BindingManager.layer = "intake"
 
-        val shoot = SequentialGroup(
-        Transfer.shoot,
-        Delay(1.0),
-        Transfer.rest,
-        )
+
+        Shooter.flywheel.power = 0.0
 
         button { BindingManager.layer == "pre_shoot"}
-//            .whenBecomesTrue { Transfer.rest() }
-//            .whenTrue { Shooter.preShoot() }
+            .whenBecomesTrue { Transfer.rest() }
+            .whenTrue {
+                Shooter.preShoot()
+                Shooter.powerTurret()
+            }
 
         button { BindingManager.layer == "intake"}
             .whenBecomesTrue {
                 Transfer.intake()
+                Shooter.restFlywheel()
+            }
+            .whenTrue {
+                Shooter.powerTurret()
             }
 
-        button { gamepad1.x }
-            .whenBecomesTrue {
-                Shooter.highVTest()
-            }
-            .whenBecomesFalse { Shooter.lowVTest() }
+
 
 //        button {Shooter.canShoot() }
 //            .whenBecomesTrue { Transfer.shoot() }
@@ -73,6 +79,11 @@ class TeleOpProgram : NextFTCOpMode() {
 
         button { gamepad1.b }
             .whenBecomesTrue {
+                val shoot = SequentialGroup(
+                    Transfer.shoot,
+                    Delay(1.0),
+                    Transfer.rest,
+                )
                 shoot()
                 BindingManager.layer = "pre_shoot"
             }
@@ -84,7 +95,5 @@ class TeleOpProgram : NextFTCOpMode() {
     }
 
     override fun onStop() {
-        super.onStop()
-        BindingManager.reset()
     }
  }

@@ -2,7 +2,6 @@ repositories {
     mavenCentral()
     google() // Needed for androidx
     maven { url = "https://mymaven.bylazar.com/releases" }
-    maven { url = "https://repo.dairy.foundations/#/releases"}
 }
 
 dependencies {
@@ -17,8 +16,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'dev.nextftc:control:1.0.0'
     implementation 'dev.nextftc:bindings:1.0.1'
-    implementation 'dev.frozenmilk.sinister:Sloth:0.2.4'
-
+    implementation 'org.conscrypt:conscrypt-openjdk-uber:2.5.2'
     implementation 'com.pedropathing:ftc:2.0.6'
     implementation 'com.pedropathing:telemetry:1.0.0'
     implementation 'com.bylazar:fullpanels:1.0.9'
