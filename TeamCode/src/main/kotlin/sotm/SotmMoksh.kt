@@ -1,3 +1,5 @@
+package sotm
+
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.sqrt
@@ -72,7 +74,7 @@ object SotmMoksh {
         val c1 = 2 * T*T * B
         val c0 = dz*dz - T*T * A
 
-//        val t0 = sqrt((2*(dz + sqrt(dz*dz + A*T*T)))/GRAVITY)
+//        val t0 = sqrt((2*(dz + sqrt(dz*dz + A*T*T)))/SOTM.GRAVITY)
 
         var t = calculateT0(A, T, dz) ?: return false
 

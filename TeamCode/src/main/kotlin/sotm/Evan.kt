@@ -1,4 +1,5 @@
-import kotlin.math.PI
+package sotm
+
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
@@ -12,7 +13,8 @@ object Evan {
     data class VelocityVector(val x: Double, val y: Double)
     class EvanResult (
         var targetRPM: Double = 0.0,
-        var targetTurretPos: Double = 0.0
+        var targetTurretPos: Double = 0.0,
+        var targetHoodPos: Double = 0.0
     )
 
     fun calculateEvan (
@@ -24,19 +26,26 @@ object Evan {
     ) {
         val deltaY = targetY - shooterY
         val deltaX = targetX - shooterX
-        val distance = sqrt(deltaY*deltaY + deltaX*deltaX)
-        val ballSpeed = sqrt((distance*distance * GRAVITY) / (2 * cos(angle)*cos(angle) * (distance * tan(angle) - (targetHeight-SHOOTER_HEIGHT))))
+        val distance = sqrt(deltaY * deltaY + deltaX * deltaX)
+        val ballSpeed = sqrt(
+            (distance * distance * GRAVITY) / (2 * cos(angle) * cos(angle) * (distance * tan(angle) - (targetHeight - shooterHeight)))
+        )
         val ballYaw = atan2(deltaY, deltaX)
         val ballVelocityVector = VelocityVector(ballSpeed * cos(ballYaw), ballSpeed * sin(ballYaw))
         val robotVelocityVector = VelocityVector(robotXV, robotYV)
         val finalVector = VelocityVector(ballVelocityVector.x - robotVelocityVector.x, ballVelocityVector.y - robotVelocityVector.y)
-        val velocity = sqrt(finalVector.x*finalVector.x + finalVector.y*finalVector.y)
+        val velocity = sqrt(finalVector.x * finalVector.x + finalVector.y * finalVector.y)
         val yaw = atan2(finalVector.y, finalVector.x)
 
         val rpm = velocityToRpm(velocity)
         val turretPos = yawToPos(yaw)
         result.targetRPM = rpm
         result.targetTurretPos = turretPos
+        if (distance < 2) {
+            result.targetHoodPos = KtConstants.HOOD_CLOSE
+        } else {
+            result.targetHoodPos = KtConstants.HOOD_FAR
+        }
     }
 
     fun velocityToRpm(velocity: Double): Double {

@@ -1,0 +1,43 @@
+package teleops
+
+import com.pedropathing.geometry.Pose
+import dev.nextftc.bindings.button
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp
+import dev.nextftc.bindings.BindingManager
+import dev.nextftc.core.components.BindingsComponent
+import dev.nextftc.ftc.NextFTCOpMode
+import dev.nextftc.ftc.components.BulkReadComponent
+
+@TeleOp(name = "SideSelector")
+class SideSelector : NextFTCOpMode() {
+    init {
+        addComponents(
+            BulkReadComponent,
+            BindingsComponent,
+        )
+    }
+
+    override fun onStartButtonPressed() {
+        button {gamepad1.right_bumper}
+            .whenBecomesTrue {
+                KtConstants.GOAL_X = 140.0
+                KtConstants.GOAL_Y = 140.0
+                telemetry.addData("Side:", "RED")
+                telemetry.update()
+                RobotStorage.saveState(RobotStorage.RobotState(side = "RED"))
+            }
+        button {gamepad1.left_bumper}
+            .whenBecomesTrue {
+                KtConstants.GOAL_X = 0.0
+                KtConstants.GOAL_Y = 140.0
+                telemetry.addData("Side:", "BLUE")
+                telemetry.update()
+                RobotStorage.saveState(RobotStorage.RobotState(side = "BLUE"))
+            }
+    }
+
+    override fun onUpdate() {
+        super.onUpdate()
+        BindingManager.update()
+    }
+}
