@@ -5,8 +5,8 @@ object RobotStorage {
 
     // Default values if loading fails
     data class RobotState(
-        val x: Double = 72.0,
-        val y: Double = 72.0,
+        val x: Double = 80.0,
+        val y: Double = 10.0,
         val heading: Double = 0.0,
         val side: String = "RED"
     )

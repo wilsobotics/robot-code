@@ -34,13 +34,18 @@ object Transfer : Subsystem {
             pusher.position = KtConstants.PUSHER_REST
         }
 
-    val shoot = SequentialGroup(
-        SetPower(frontRollers, KtConstants.INTAKE_ACTIVE_POWER),
-        SetPower(backRollers, KtConstants.TRANSFER_ACTIVE_POWER),
-        Delay(0.5),
+    val shoot = LambdaCommand()
+        .setStart {
+            frontRollers.power = KtConstants.INTAKE_ACTIVE_POWER
+            backRollers.power = KtConstants.TRANSFER_ACTIVE_POWER
+        }
+
+    val kickBall = SequentialGroup(
         SetPosition(pusher, KtConstants.PUSHER_PUSH),
-        Delay(0.3),
-        SetPosition(pusher, KtConstants.PUSHER_REST),
-        preShoot
+        Delay(0.5),
+        SetPosition(pusher, KtConstants.PUSHER_REST)
+
     )
+        .requires(this)
+        .setInterruptible(false)
 }

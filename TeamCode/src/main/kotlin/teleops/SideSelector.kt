@@ -20,19 +20,19 @@ class SideSelector : NextFTCOpMode() {
     override fun onStartButtonPressed() {
         button {gamepad1.right_bumper}
             .whenBecomesTrue {
-                KtConstants.GOAL_X = 140.0
-                KtConstants.GOAL_Y = 140.0
+                KtConstants.SIDE = "RED"
+                KtConstants.GOAL_X = 144.0
+                KtConstants.GOAL_Y = 144.0
                 telemetry.addData("Side:", "RED")
                 telemetry.update()
-                RobotStorage.saveState(RobotStorage.RobotState(side = "RED"))
             }
         button {gamepad1.left_bumper}
             .whenBecomesTrue {
+                KtConstants.SIDE = "BLUE"
                 KtConstants.GOAL_X = 0.0
-                KtConstants.GOAL_Y = 140.0
+                KtConstants.GOAL_Y = 144.0
                 telemetry.addData("Side:", "BLUE")
                 telemetry.update()
-                RobotStorage.saveState(RobotStorage.RobotState(side = "BLUE"))
             }
     }
 
