@@ -29,9 +29,9 @@ class MainTeleop : NextFTCOpMode() {
     }
 
     override fun onStartButtonPressed() {
+        var autoShoot = true
         follower.setStartingPose(Pose(KtConstants.ROBOT_X, KtConstants.ROBOT_Y, KtConstants.ROBOT_HEADING))
         Shooter.turretEnabled = true
-        Shooter.turretEncoder.currentPosition = KtConstants.TURRET_POS
         val driverControlled = PedroDriverControlled(
             -Gamepads.gamepad1.leftStickY,
             -Gamepads.gamepad1.leftStickX,
@@ -42,11 +42,25 @@ class MainTeleop : NextFTCOpMode() {
         BindingManager.layer = "intake"
 
         Transfer.rest()
+        Transfer.pusher.position = 1.0
+        Transfer.pusher.position = KtConstants.PUSHER_REST
 
         button {gamepad1.dpad_up}
+            .inLayer("intake")
             .whenBecomesTrue {
-                BindingManager.layer == "rest"
+                BindingManager.layer = "rest"
                 Transfer.rest()
+                Shooter.turnFlywheelOff()
+            }
+            .inLayer("pre_shoot")
+            .whenBecomesTrue {
+                BindingManager.layer = "rest"
+                Transfer.rest()
+
+            }
+            .inLayer("rest")
+            .whenBecomesTrue {
+                BindingManager.layer = "pre_shoot"
             }
 
         button { BindingManager.layer == "pre_shoot" }
@@ -69,7 +83,7 @@ class MainTeleop : NextFTCOpMode() {
             .inLayer("rest")
             .whenBecomesTrue { BindingManager.layer = "intake" }
 
-        button { gamepad1.right_trigger > 0.3 || Shooter.canShoot() }
+        button { gamepad1.right_trigger > 0.3 || (Shooter.canShoot() && autoShoot) }
             .inLayer("pre_shoot")
             .whenBecomesTrue {
                 Transfer.shoot()
@@ -79,17 +93,21 @@ class MainTeleop : NextFTCOpMode() {
             }
 
         button { gamepad1.left_trigger > 0.3 }
-            .inLayer("intake")
             .whenBecomesTrue { Transfer.frontRollers.power = -1.0 }
-            .whenBecomesFalse { Transfer.intake() }
+            .whenBecomesFalse { Transfer.preShoot() }
 
         button { gamepad1.right_bumper }
             .inLayer("pre_shoot")
             .whenBecomesTrue { Transfer.kickBall()}
 
-        button {gamepad1.a}
+        button {gamepad1.dpad_down}
             .whenBecomesTrue {
                 follower.pose = side(KtConstants.RESET_POS)
+            }
+
+        button {gamepad1.dpad_right}
+            .whenBecomesTrue {
+                if (autoShoot) {autoShoot = false} else {autoShoot = true}
             }
     }
 

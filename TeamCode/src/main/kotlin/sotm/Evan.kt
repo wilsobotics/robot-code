@@ -11,10 +11,12 @@ object Evan {
 
     data class VelocityVector(val x: Double, val y: Double)
     const val GRAVITY = 9.81
+    var distance = 0.0
     class EvanResult (
         var targetRPM: Double = 0.0,
         var targetTurretPos: Double = 0.0,
-        var targetHoodPos: Double = 0.0
+        var targetHoodPos: Double = 0.0,
+        var distance: Double = 0.0
     )
 
     fun calculateEvan (
@@ -27,7 +29,7 @@ object Evan {
         val deltaY = targetY - shooterY
         val deltaX = targetX - shooterX
         val deltaH = targetHeight - shooterHeight
-        val distance = sqrt(deltaY * deltaY + deltaX * deltaX)
+        distance = sqrt(deltaY * deltaY + deltaX * deltaX)
 
         // 1. Calculate the TOTAL initial launch velocity (v0)
         // This is the speed required if the robot were stationary.
@@ -66,11 +68,14 @@ object Evan {
         val turretPos = yawToPos(yaw)
         result.targetRPM = rpm
         result.targetTurretPos = turretPos
-        if (distance < 2.8) {
+        result.distance = distance
+        if (distance < 2.7) {
             result.targetHoodPos = KtConstants.HOOD_CLOSE_POS
+            KtConstants.FLYWHEEL_TOLERANCE = 85.0
         } else {
             result.targetHoodPos = KtConstants.HOOD_FAR_POS
-            result.targetRPM = 1450.0
+            result.targetRPM = 1500.0
+            KtConstants.FLYWHEEL_TOLERANCE = 100.0
         }
     }
 

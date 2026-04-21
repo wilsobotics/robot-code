@@ -8,7 +8,6 @@ import subsystems.Shooter.flywheelController
 import subsystems.Shooter.turret
 import subsystems.Shooter.turretController
 import subsystems.Shooter.turretEncoder
-import subsystems.Shooter.turretEncoderOffset
 import kotlin.math.cos
 
 object Panels {
@@ -24,6 +23,7 @@ object Panels {
         panelsTelemetry.addData("Yvelo", follower.velocity.yComponent)
         panelsTelemetry.addData("Yaw", Math.toDegrees(follower.pose.heading))
         panelsTelemetry.addData("Target hood", evanResult.targetHoodPos)
+        panelsTelemetry.addData("Flywheel power", flywheel.power)
         panelsTelemetry.update()
     }
 

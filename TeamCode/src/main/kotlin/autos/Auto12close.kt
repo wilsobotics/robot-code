@@ -13,6 +13,8 @@ import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
+import dev.nextftc.hardware.positionable.SetPosition
+import dev.nextftc.hardware.powerable.SetPower
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import subsystems.Shooter
 import subsystems.Transfer
@@ -39,7 +41,7 @@ class Auto12close : NextFTCOpMode() {
 
     val intakeTime = 0.3
     val waitTime = 0.3
-    val shootTime = 0.6
+    val shootTime = 0.8
     val kickTime = 0.3
 
 
@@ -57,8 +59,8 @@ class Auto12close : NextFTCOpMode() {
     val startPose = side(Pose(127.0, 116.0, Math.toRadians(270.0)))
     val shootPose = side(Pose(96.000, 92.000))
     val gateOpenPose = side(Pose(131.0, 70.188))
-    val firstSpikePose = side(Pose(127.0, 80.000))
-    val middleSpikePose = side(Pose(133.000, 58.0))
+    val firstSpikePose = side(Pose(127.0, 82.000))
+    val middleSpikePose = side(Pose(133.000, 61.0))
     val thirdSpikePose = side(Pose(133.0, 41.000))
     val defaultHeading = side(Pose(0.0, 0.0, Math.toRadians(0.0))).heading
 
@@ -69,7 +71,6 @@ class Auto12close : NextFTCOpMode() {
         Transfer.shoot,
         Delay(shootTime),
         Transfer.kickBall,
-        Delay(kickTime),
         Shooter.turnFlywheelOff,
         Transfer.intake
     )
@@ -177,8 +178,11 @@ class Auto12close : NextFTCOpMode() {
 
     private val autonomousRoutine: Command
     get() = SequentialGroup(
-            preShoot,
+        preShoot,
+        SetPower(Transfer.frontRollers, 1.0),
+        SetPosition(Transfer.pusher, KtConstants.PUSHER_PUSH),
             FollowPath(shootPreload),
+            SetPosition(Transfer.pusher, KtConstants.PUSHER_REST),
             shoot,
             FollowPath(intakeMiddleSpike),
             Delay(intakeTime),

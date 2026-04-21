@@ -7,13 +7,16 @@ import com.pedropathing.paths.PathChain
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.delays.Delay
+import dev.nextftc.core.commands.groups.ParallelRaceGroup
 import dev.nextftc.core.commands.groups.SequentialGroup
+import dev.nextftc.core.commands.utility.LambdaCommand
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.FollowPath
 import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
+import dev.nextftc.hardware.powerable.SetPower
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import subsystems.Shooter
 import subsystems.Transfer
@@ -42,8 +45,8 @@ class Auto12far : NextFTCOpMode() {
 
     val intakeTime = 0.5 // Updated to 0.5s
     val waitTime = 0.3
-    val shootTime = 0.6
-    val kickTime = 0.3
+    val shootTime = 1.0
+    val kickTime = 1.0
 
     val startPose = side(Pose(80.0, 8.0, Math.toRadians(0.0)))
     val defaultHeading = side(Pose(0.0, 0.0, Math.toRadians(0.0))).heading
@@ -53,14 +56,23 @@ class Auto12far : NextFTCOpMode() {
     val ensureLoadingPos = side(Pose(125.0, 10.0))
     val leavePos = side(Pose(90.0, 30.0))
 
+    val shootConditional = LambdaCommand()
+        .setUpdate {
+            if (Shooter.canShoot()) {
+                Transfer.shoot
+            } else (
+                Transfer.preShoot
+            )
+        }
+
 
     val shoot = SequentialGroup(
-        Delay(waitTime),
-        Transfer.shoot,
-        Delay(shootTime),
+        Delay(kickTime),
         Transfer.kickBall,
         Delay(kickTime),
-        Shooter.turnFlywheelOff,
+        Transfer.kickBall,
+        Delay(kickTime),
+        Transfer.kickBall,
         Transfer.intake
     )
 
@@ -118,8 +130,9 @@ class Auto12far : NextFTCOpMode() {
 
     private val autonomousRoutine: Command
         get() = SequentialGroup(
+            SetPower(Transfer.frontRollers, 1.0),
             preShoot,
-            Delay(1.5),
+            shoot,
             FollowPath(intakeThirdSpike),
             preShoot,
             Delay(intakeTime),

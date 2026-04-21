@@ -7,11 +7,11 @@ class KtConstants {
 
         // GOAL + ROBOT dimensions
         const val GOAL_HEIGHT = 40
-        @JvmStatic var GOAL_X = 144.0
-        @JvmStatic var GOAL_Y = 144.0
+        @JvmStatic var GOAL_X = 147.0
+        @JvmStatic var GOAL_Y = 140.0
         @JvmStatic var TURRET_SWITCH_ENCODER = -1
         const val SHOOTER_HEIGHT = 15.5
-        val RESET_POS = Pose(108.0, 136.0, Math.toRadians(0.0))
+        @JvmStatic var RESET_POS = Pose(108.0, 136.0, Math.toRadians(0.0))
         @JvmStatic var ROBOT_X = 72.0
         @JvmStatic var ROBOT_Y = 72.0
         @JvmStatic var ROBOT_HEADING = 0.0
@@ -22,7 +22,7 @@ class KtConstants {
         @JvmField
         var TRANSFER_ACTIVE_POWER = 1.0
         @JvmField
-        var TRANSFER_BLOCKING_POWER = -0.6
+        var TRANSFER_BLOCKING_POWER = -0.9
         @JvmField
         var INTAKE_ACTIVE_POWER = 1.0
         @JvmField
@@ -34,8 +34,9 @@ class KtConstants {
 
         // Shooter constants
         const val TICKS_PER_DEGREE = -64.67
-        const val FLYWHEEL_TOLERANCE = 100.0
-        const val ROBOT_RADIUS = 7.0
+        @JvmField
+        var FLYWHEEL_TOLERANCE = 75.0
+        const val ROBOT_RADIUS = 10.0
         const val TURRET_TOLERANCE = 250.0
         const val TURRET_ENCODER_LIMIT = 8000.0
 
