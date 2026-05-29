@@ -7,23 +7,22 @@ import com.pedropathing.paths.PathChain
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.delays.Delay
-import dev.nextftc.core.commands.groups.ParallelRaceGroup
 import dev.nextftc.core.commands.groups.SequentialGroup
-import dev.nextftc.core.commands.utility.LambdaCommand
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.FollowPath
 import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
+import dev.nextftc.hardware.positionable.SetPosition
 import dev.nextftc.hardware.powerable.SetPower
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import subsystems.Shooter
 import subsystems.Transfer
 
 
-@Autonomous(name = "12 AUTO - Ordered")
-class Auto12far : NextFTCOpMode() {
+@Autonomous(name = "9 FAR")
+class Auto9far : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(Shooter, Transfer),
@@ -56,23 +55,14 @@ class Auto12far : NextFTCOpMode() {
     val ensureLoadingPos = side(Pose(125.0, 10.0))
     val leavePos = side(Pose(90.0, 30.0))
 
-    val shootConditional = LambdaCommand()
-        .setUpdate {
-            if (Shooter.canShoot()) {
-                Transfer.shoot
-            } else (
-                Transfer.preShoot
-            )
-        }
 
 
     val shoot = SequentialGroup(
+        Transfer.kickBallSafe,
         Delay(kickTime),
-        Transfer.kickBall,
+        Transfer.kickBallSafe,
         Delay(kickTime),
-        Transfer.kickBall,
-        Delay(kickTime),
-        Transfer.kickBall,
+        Transfer.kickBallSafe,
         Transfer.intake
     )
 
@@ -132,26 +122,22 @@ class Auto12far : NextFTCOpMode() {
         get() = SequentialGroup(
             SetPower(Transfer.frontRollers, 1.0),
             preShoot,
+            SetPosition(Transfer.pusher, KtConstants.PUSHER_PUSH),
+            Delay(3.0),
+            SetPosition(Transfer.pusher, KtConstants.PUSHER_REST),
             shoot,
+
             FollowPath(intakeThirdSpike),
-            preShoot,
             Delay(intakeTime),
             FollowPath(shootSecond),
             shoot,
 
             FollowPath(intakeLoadingFirst),
-            preShoot,
             Delay(intakeTime),
             FollowPath(ensureLoadingBack),
             FollowPath(ensureLoadingFront),
             Delay(intakeTime),
             FollowPath(shootThird),
-            shoot,
-
-            FollowPath(intakeLoadingSecond),
-            preShoot,
-            Delay(intakeTime),
-            FollowPath(shootFourth),
             shoot,
 
             FollowPath(leave)

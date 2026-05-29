@@ -21,28 +21,24 @@ object Transfer : Subsystem {
             frontRollers.power = KtConstants.INTAKE_ACTIVE_POWER
             backRollers.power = KtConstants.TRANSFER_BLOCKING_POWER
         }
-        .requires(this)
 
     val preShoot = LambdaCommand()
         .setStart {
             frontRollers.power = KtConstants.INTAKE_RESTING_POWER
             backRollers.power = KtConstants.TRANSFER_BLOCKING_POWER
         }
-        .requires(this)
 
     val rest = LambdaCommand()
         .setStart {
             frontRollers.power = 0.5
             backRollers.power = 0.0
         }
-        .requires(this)
 
     val shoot = LambdaCommand()
         .setStart {
             frontRollers.power = KtConstants.INTAKE_ACTIVE_POWER
             backRollers.power = KtConstants.TRANSFER_ACTIVE_POWER
         }
-        .requires(this)
 
     val kickBall = SequentialGroup(
         shoot,
@@ -51,6 +47,19 @@ object Transfer : Subsystem {
         Delay(0.5),
         preShoot,
         SetPosition(pusher, KtConstants.PUSHER_REST)
+    )
+        .requires(this)
+        .setInterruptible(false)
+
+    val kickBallSafe = SequentialGroup(
+        shoot,
+        Delay(0.3),
+        SetPosition(pusher, KtConstants.PUSHER_PUSH),
+        Delay(0.3),
+        rest,
+        SetPosition(pusher, KtConstants.PUSHER_REST),
+        Delay(0.3),
+        preShoot
     )
         .requires(this)
         .setInterruptible(false)

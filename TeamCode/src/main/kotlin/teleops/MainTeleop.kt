@@ -15,6 +15,7 @@ import dev.nextftc.extensions.pedro.PedroDriverControlled
 import dev.nextftc.ftc.Gamepads
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
+import org.firstinspires.ftc.teamcode.Localisation
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 
 @TeleOp(name = "NextFTC TeleOp")
@@ -28,17 +29,28 @@ class MainTeleop : NextFTCOpMode() {
         )
     }
 
+
     override fun onStartButtonPressed() {
         var autoShoot = true
         follower.setStartingPose(Pose(KtConstants.ROBOT_X, KtConstants.ROBOT_Y, KtConstants.ROBOT_HEADING))
         Shooter.turretEnabled = true
-        val driverControlled = PedroDriverControlled(
-            -Gamepads.gamepad1.leftStickY,
-            -Gamepads.gamepad1.leftStickX,
-            -Gamepads.gamepad1.rightStickX,
-            false
-        )
-        driverControlled()
+        if (KtConstants.SIDE == "RED") {
+            val driverControlled = PedroDriverControlled(
+                -Gamepads.gamepad1.leftStickY,
+                -Gamepads.gamepad1.leftStickX,
+                -Gamepads.gamepad1.rightStickX,
+                false
+            )
+            driverControlled()
+        } else {
+            val driverControlled = PedroDriverControlled(
+                Gamepads.gamepad1.leftStickY,
+                Gamepads.gamepad1.leftStickX,
+                -Gamepads.gamepad1.rightStickX,
+                false
+            )
+            driverControlled()
+        }
         BindingManager.layer = "intake"
 
         Transfer.rest()
@@ -108,6 +120,10 @@ class MainTeleop : NextFTCOpMode() {
         button {gamepad1.dpad_right}
             .whenBecomesTrue {
                 if (autoShoot) {autoShoot = false} else {autoShoot = true}
+            }
+        button {gamepad1.dpad_left}
+            .whenBecomesTrue {
+                if (Shooter.zeroTurret) {Shooter.zeroTurret = false} else {Shooter.zeroTurret = true}
             }
     }
 

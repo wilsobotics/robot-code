@@ -6,9 +6,7 @@ import com.pedropathing.paths.PathChain
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.delays.Delay
-import dev.nextftc.core.commands.groups.ParallelRaceGroup
 import dev.nextftc.core.commands.groups.SequentialGroup
-import dev.nextftc.core.commands.utility.LambdaCommand
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.FollowPath
 import dev.nextftc.extensions.pedro.PedroComponent
@@ -21,8 +19,8 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import subsystems.Shooter
 import subsystems.Transfer
 
-@Autonomous(name = "12 AUTO greedy mode")
-class Auto12close : NextFTCOpMode() {
+@Autonomous(name = "9 CLOSE")
+class Auto9close : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(Shooter, Transfer),
@@ -81,7 +79,6 @@ class Auto12close : NextFTCOpMode() {
         Shooter.turnFlywheelOn,
         Transfer.preShoot,
     )
-
 
     override fun onInit() {
         shootPreload = follower.pathBuilder()
@@ -180,29 +177,29 @@ class Auto12close : NextFTCOpMode() {
     }
 
     private val autonomousRoutine: Command
-    get() = SequentialGroup(
-        preShoot,
-        FollowPath(shootPreload),
-        SetPosition( Transfer.pusher, KtConstants.PUSHER_REST),
-        shoot,
-        FollowPath(intakeMiddleSpike),
-        Delay(intakeTime),
-        FollowPath(openGate),
-        Delay(1.0),
-        preShoot,
-        FollowPath(secondShoot),
-        shoot,
-        FollowPath(intakeFirstSpike),
-        Delay(intakeTime),
-        preShoot,
-        FollowPath(thirdShoot),
-        shoot,
-        FollowPath(intakeThirdSpike),
-        Delay(intakeTime),
-        preShoot,
-        FollowPath(fourthShoot),
-        shoot,
-        FollowPath(leave)
+        get() = SequentialGroup(
+            preShoot,
+            SetPower(Transfer.frontRollers, 1.0),
+            SetPosition(Transfer.pusher, KtConstants.PUSHER_PUSH),
+            FollowPath(shootPreload),
+            SetPosition(Transfer.pusher, KtConstants.PUSHER_REST),
+            shoot,
+
+            FollowPath(intakeMiddleSpike),
+            Delay(intakeTime),
+            FollowPath(openGate),
+            Delay(1.0),
+            preShoot,
+            FollowPath(secondShoot),
+            shoot,
+
+            FollowPath(intakeFirstSpike),
+            Delay(intakeTime),
+            preShoot,
+            FollowPath(thirdShoot),
+            shoot,
+
+            FollowPath(leave)
         )
 
 
@@ -218,6 +215,5 @@ class Auto12close : NextFTCOpMode() {
         KtConstants.ROBOT_Y = follower.pose.y
         KtConstants.TURRET_POS = Shooter.turretEncoder.currentPosition
         KtConstants.ROBOT_HEADING = follower.pose.heading
-
     }
 }

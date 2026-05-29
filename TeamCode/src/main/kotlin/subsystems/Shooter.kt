@@ -18,6 +18,7 @@ import kotlin.math.abs
 
 object Shooter : Subsystem {
     val evanResult = Evan.EvanResult()
+    var zeroTurret = false
     var turretEnabled = false
     val flywheel = MotorGroup(
         MotorEx("flywheel").floatMode(),
@@ -98,13 +99,27 @@ object Shooter : Subsystem {
                 KtConstants.HOOD_FAR_ANGLE
             }
 
-            val robotHeadingTicks = Evan.yawToPos(follower.heading.IEEErem(2 * PI))
-            turretController.goal = KineticState(
-                (evanResult.targetTurretPos - robotHeadingTicks).coerceIn(
+            // 1. Get current robot heading in radians
+            val currentHeadingRad = follower.heading
+
+// 2. Calculate the target angle in radians (converting Evan's ticks back to rads)
+// Assuming Evan.posToYaw exists, or use your TICKS_PER_DEGREE constant:
+            val ticksPerRadian = (KtConstants.TICKS_PER_DEGREE * 180.0 / Math.PI)
+            val targetAngleRad = evanResult.targetTurretPos / ticksPerRadian
+
+// 3. Find the SHORTEST angular distance (this prevents the 360-degree flip)
+            val shortestErrorRad = (targetAngleRad - currentHeadingRad).IEEErem(2 * Math.PI)
+
+            if (!zeroTurret) {
+                // 4. Convert that clean error back into ticks for your PID controller
+                val targetTicks = (shortestErrorRad * ticksPerRadian).coerceIn(
                     -KtConstants.TURRET_ENCODER_LIMIT,
                     KtConstants.TURRET_ENCODER_LIMIT
                 )
-            )
+                turretController.goal = KineticState(targetTicks)
+            } else {
+                turretController.goal = KineticState(0.0)
+            }
             val turretPower = turretController.calculate(KineticState(turretEncoderPos(), turretEncoder.state.velocity, turretEncoder.state.acceleration))
             turret.power = -turretPower * KtConstants.TURRET_SWITCH_ENCODER
             turret2.power = -turretPower * KtConstants.TURRET_SWITCH_ENCODER
