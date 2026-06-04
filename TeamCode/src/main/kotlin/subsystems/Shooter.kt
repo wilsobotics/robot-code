@@ -1,6 +1,9 @@
 package subsystems
 
-import sotm.Evan
+import KtConstants
+import Panels
+import com.skeletonarmy.marrow.zones.Point
+import com.skeletonarmy.marrow.zones.PolygonZone
 import dev.nextftc.control.KineticState
 import dev.nextftc.control.builder.controlSystem
 import dev.nextftc.control.feedback.PIDCoefficients
@@ -9,26 +12,27 @@ import dev.nextftc.core.commands.utility.LambdaCommand
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.hardware.controllable.MotorGroup
-import dev.nextftc.hardware.impl.CRServoEx
 import dev.nextftc.hardware.impl.MotorEx
 import dev.nextftc.hardware.impl.ServoEx
+import sotm.Evan
 import kotlin.math.IEEErem
-import kotlin.math.PI
 import kotlin.math.abs
 
 object Shooter : Subsystem {
+    val robotZone = PolygonZone(14.0-KtConstants.MARROW_THRESHOLD, 17.5-KtConstants.MARROW_THRESHOLD)
+    val closeLaunchZone: PolygonZone =
+        PolygonZone(Point(144.0, 144.0), Point(72.0, 72.0), Point(0.0, 144.0))
+    val farLaunchZone: PolygonZone = PolygonZone(Point(48.0, 0.0), Point(72.0, 24.0), Point(96.0, 0.0))
     val evanResult = Evan.EvanResult()
     var zeroTurret = false
     var turretEnabled = false
     val flywheel = MotorGroup(
-        MotorEx("flywheel").floatMode(),
-        MotorEx("flywheel2").reversed().floatMode()
+        MotorEx("shooterB").floatMode(),
+        MotorEx("shooterA").reversed().floatMode()
     )
-    val turret = CRServoEx("turret1").reversed()
-    val turret2 = CRServoEx("turret2").reversed()
+    val turret = MotorEx("turret").floatMode()
     val hood = ServoEx("hood")
     var hood_angle = 50.0
-    val turretEncoder = MotorEx("rear_left").zeroed()
     val turretOffset = KtConstants.TURRET_POS
     val flywheelController = controlSystem {
         velPid(PIDCoefficients(KtConstants.FLYWHEEL_KP, KtConstants.FLYWHEEL_KI, KtConstants.FLYWHEEL_KD))
@@ -49,27 +53,19 @@ object Shooter : Subsystem {
             powerFlywheel = false
         }
 
-    fun turretEncoderPos(): Double {
-        return turretEncoder.currentPosition - turretOffset
-    }
 
 
     fun canShoot(): Boolean {
         return abs(flywheel.state.velocity - flywheelController.goal.velocity) < KtConstants.FLYWHEEL_TOLERANCE
                 && (
-                abs(turretEncoderPos() - turretController.goal.position) < KtConstants.TURRET_TOLERANCE
+                abs(turret.currentPosition - turretController.goal.position) < KtConstants.TURRET_TOLERANCE
                         && abs(turretController.goal.position) != KtConstants.TURRET_ENCODER_LIMIT
                 )
-                && (
-                follower.pose.y > follower.pose.x - KtConstants.ROBOT_RADIUS && follower.pose.y > -follower.pose.x + 144 - KtConstants.ROBOT_RADIUS
-                        || follower.pose.y < follower.pose.x - 48 + KtConstants.ROBOT_RADIUS && follower.pose.y < -follower.pose.x + 96 + KtConstants.ROBOT_RADIUS
-
-                )
-                && (evanResult.distance > 1.2)
+                && (robotZone.isInside(closeLaunchZone) || robotZone.isInside(farLaunchZone))
     }
 
     override fun initialize() {
-        turretEnabled = false
+        turretEnabled = true
         turretController.reset()
 //        turretController.goal = KineticState(0.0)
 //        if (KtConstants.TURRET_SWITCH_ENCODER == -1) {
@@ -80,6 +76,8 @@ object Shooter : Subsystem {
     }
 
     override fun periodic() {
+        robotZone.setPosition(follower.pose.x, follower.pose.y)
+        robotZone.setRotation(follower.heading)
         if (turretEnabled) {
             Evan.calculateEvan(
                 KtConstants.GOAL_HEIGHT * 0.0254,
@@ -120,9 +118,8 @@ object Shooter : Subsystem {
             } else {
                 turretController.goal = KineticState(0.0)
             }
-            val turretPower = turretController.calculate(KineticState(turretEncoderPos(), turretEncoder.state.velocity, turretEncoder.state.acceleration))
+            val turretPower = turretController.calculate(turret.state)
             turret.power = -turretPower * KtConstants.TURRET_SWITCH_ENCODER
-            turret2.power = -turretPower * KtConstants.TURRET_SWITCH_ENCODER
 
             hood.position = evanResult.targetHoodPos
 
@@ -130,14 +127,13 @@ object Shooter : Subsystem {
                 flywheelController.goal = KineticState(0.0, evanResult.targetRPM)
                 val flywheelPower =
                     flywheelController.calculate(KineticState(0.0, flywheel.velocity))
-                flywheel.power = flywheelPower
+                flywheel.power = -flywheelPower
             } else {
                 flywheel.power = 0.0
             }
             Panels.telemetry()
         } else {
             turret.power = 0.0
-            turret2.power = 0.0
             flywheel.power = 0.0
         }
     }

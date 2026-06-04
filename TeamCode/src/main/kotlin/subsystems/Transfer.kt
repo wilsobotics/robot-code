@@ -7,90 +7,25 @@ import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.hardware.impl.MotorEx
 import dev.nextftc.hardware.impl.ServoEx
 import dev.nextftc.hardware.positionable.SetPosition
-import dev.nextftc.hardware.powerable.SetPower
-import sotm.Evan
 
 object Transfer : Subsystem {
-    val frontRollers = MotorEx("intake")
-    val backRollers = MotorEx("backRollers")
-
-    val pusher = ServoEx("door")
+    val intakeMotor = MotorEx("intake")
+    val door = ServoEx("door")
 
     val intake = LambdaCommand()
         .setStart {
-            frontRollers.power = KtConstants.INTAKE_ACTIVE_POWER
-            backRollers.power = KtConstants.TRANSFER_BLOCKING_POWER
-        }
-
-    val preShoot = LambdaCommand()
-        .setStart {
-            frontRollers.power = KtConstants.INTAKE_RESTING_POWER
-            backRollers.power = KtConstants.TRANSFER_BLOCKING_POWER
+            intakeMotor.power = KtConstants.INTAKE_ACTIVE_POWER
+            door.position = KtConstants.DOOR_CLOSE
         }
 
     val rest = LambdaCommand()
         .setStart {
-            frontRollers.power = 0.5
-            backRollers.power = 0.0
+            intakeMotor.power = KtConstants.INTAKE_RESTING_POWER
         }
 
     val shoot = LambdaCommand()
         .setStart {
-            frontRollers.power = KtConstants.INTAKE_ACTIVE_POWER
-            backRollers.power = KtConstants.TRANSFER_ACTIVE_POWER
+            intakeMotor.power = KtConstants.INTAKE_ACTIVE_POWER
+            door.position = KtConstants.DOOR_OPEN
         }
-
-    val kickBall = SequentialGroup(
-        shoot,
-        Delay(0.3),
-        SetPosition(pusher, KtConstants.PUSHER_PUSH),
-        Delay(0.5),
-        preShoot,
-        SetPosition(pusher, KtConstants.PUSHER_REST)
-    )
-        .requires(this)
-        .setInterruptible(false)
-
-    val kickBallSafe = SequentialGroup(
-        shoot,
-        Delay(0.3),
-        SetPosition(pusher, KtConstants.PUSHER_PUSH),
-        Delay(0.3),
-        rest,
-        SetPosition(pusher, KtConstants.PUSHER_REST),
-        Delay(0.3),
-        preShoot
-    )
-        .requires(this)
-        .setInterruptible(false)
-
-//    val checkKickBall = LambdaCommand()
-//        .setStart {
-//            if (Shooter.flywheelController.goal.velocity > 1330) {
-//                if (Shooter.flywheel.velocity > 1330) {
-//                    val kick = SequentialGroup(
-//                        shoot,
-//                        Delay(0.5),
-//                        kickBall,
-//                        Delay(0.3),
-//                        preShoot
-//                    )
-//                    kick()
-//                }
-//            } else {
-//                kickBall()
-//            }
-//        }
-//        .requires(this)
-//        .setInterruptible(false)
-//    val kickBall = SequentialGroup(
-//        Delay(0.2),
-//        SetPosition(pusher, KtConstants.PUSHER_PUSH),
-//        rest,
-//        Delay(0.5),
-//        SetPosition(pusher, KtConstants.PUSHER_REST),
-//        preShoot
-//    )
-//        .requires(this)
-//        .setInterruptible(false)
 }

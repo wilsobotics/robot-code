@@ -7,14 +7,13 @@ import subsystems.Shooter.flywheel
 import subsystems.Shooter.flywheelController
 import subsystems.Shooter.turret
 import subsystems.Shooter.turretController
-import subsystems.Shooter.turretEncoder
 import kotlin.math.cos
 
 object Panels {
     val panelsTelemetry = PanelsTelemetry.telemetry
     val panelsField = PanelsField.field
     fun telemetry() {
-        panelsTelemetry.addData("Turret actual pos", turretEncoder.state.position)
+        panelsTelemetry.addData("Turret actual pos", turret.state.position)
         panelsTelemetry.addData("Turret target", turretController.goal.position)
         panelsTelemetry.addData("Turret power", turret.power)
         panelsTelemetry.addData("Flywheel vel", flywheel.state.velocity)

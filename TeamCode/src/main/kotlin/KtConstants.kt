@@ -7,12 +7,13 @@ class KtConstants {
 
         // GOAL + ROBOT dimensions
         const val GOAL_HEIGHT = 40
+        const val MARROW_THRESHOLD = 1.0
         @JvmStatic var GOAL_X = 145.0
         @JvmStatic var GOAL_Y = 140.0
         @JvmStatic var TURRET_SWITCH_ENCODER = -1
         const val SHOOTER_HEIGHT = 15.5
         @JvmStatic var RESET_POS = Pose(108.0, 136.0, Math.toRadians(0.0))
-        @JvmStatic var ROBOT_X = 72.0
+        @JvmStatic var ROBOT_X = 81.0
         @JvmStatic var ROBOT_Y = 72.0
         @JvmStatic var ROBOT_HEADING = 0.0
         @JvmStatic var TURRET_POS = 0.0
@@ -24,27 +25,27 @@ class KtConstants {
         @JvmField
         var TRANSFER_BLOCKING_POWER = -0.9
         @JvmField
-        var INTAKE_ACTIVE_POWER = 1.0
+        var INTAKE_ACTIVE_POWER = -1.0
         @JvmField
-        var INTAKE_RESTING_POWER = 0.9
+        var INTAKE_RESTING_POWER = 0.0
         @JvmField
-        var PUSHER_PUSH = 0.0
+        var DOOR_OPEN = 1.0
         @JvmField
-        var PUSHER_REST = 1.0
+        var DOOR_CLOSE = 0.83
 
         // Shooter constants
-        const val TICKS_PER_DEGREE = -64.67
+        const val TICKS_PER_DEGREE = 4.0
         @JvmField
         var FLYWHEEL_TOLERANCE = 75.0
         const val ROBOT_RADIUS = 10.0
-        const val TURRET_TOLERANCE = 250.0
-        const val TURRET_ENCODER_LIMIT = 11000.0
+        const val TURRET_TOLERANCE = 2.0
+        const val TURRET_ENCODER_LIMIT = 400.0
 
         @JvmField
-        var HOOD_CLOSE_POS = 0.13
-        var HOOD_FAR_POS = 0.25
-        var HOOD_CLOSE_ANGLE = 50.0
-        var HOOD_FAR_ANGLE = 40.0
+        var HOOD_CLOSE_POS = 0.0
+        var HOOD_FAR_POS = 0.53
+        var HOOD_CLOSE_ANGLE = 65.0
+        var HOOD_FAR_ANGLE = 45.0
 
         const val FLYWHEEL_KP = 0.01
         const val FLYWHEEL_KI = 0.0
@@ -53,12 +54,12 @@ class KtConstants {
         const val FLYWHEEL_KA = 0.0
         const val FLYWHEEL_KS = 0.15
 
-        const val TURRET_KP = 0.00020
+        const val TURRET_KP = 0.08
         const val TURRET_KI = 0.0
-        const val TURRET_KD = 0.000010
+        const val TURRET_KD = 0.0
         const val TURRET_KV = 0.0
         const val TURRET_KA = 0.0
-        const val TURRET_KS = 0.32
+        const val TURRET_KS = 0.1
 
         @JvmStatic var currentPose = Pose(0.0, 0.0, 0.0)
 

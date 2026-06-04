@@ -26,7 +26,7 @@ import com.pedropathing.geometry.PedroCoordinates;
 5. Use "getPedroLocation()" wherever you want pedro coordinates
  */
 
-    public abstract class Localisation extends NextFTCOpMode { //abstract means that it can be used to extend in any other class
+public abstract class Localisation extends NextFTCOpMode { //abstract means that it can be used to extend in any other class
 
 
     public Limelight3A limelight; // class scope variable of the limelight
