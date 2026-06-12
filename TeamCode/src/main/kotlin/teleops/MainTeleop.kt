@@ -15,6 +15,7 @@ import dev.nextftc.extensions.pedro.PedroDriverControlled
 import dev.nextftc.ftc.Gamepads
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
+import org.firstinspires.ftc.teamcode.LocalisationMT2
 import org.firstinspires.ftc.teamcode.Prism.PrismAnimations.Solid
 import org.firstinspires.ftc.teamcode.kotlinleds
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
@@ -28,6 +29,9 @@ import subsystems.Transfer
 
 @TeleOp(name = "NextFTC TeleOp")
 class MainTeleop : NextFTCOpMode() {
+
+    lateinit var visionSystem: LocalisationMT2
+
     init {
         addComponents(
             SubsystemComponent(Shooter, Transfer, Leds),
@@ -37,7 +41,10 @@ class MainTeleop : NextFTCOpMode() {
         )
     }
 
-    // see if these methods work
+    override fun onInit() {
+        visionSystem = LocalisationMT2(hardwareMap, telemetry, follower)
+    }
+
     override fun onStartButtonPressed() {
         val ledsManager = LambdaCommand()
             .setStart {
@@ -134,11 +141,15 @@ class MainTeleop : NextFTCOpMode() {
         button {gamepad1.cross}
             .whenBecomesTrue {
                 if (Shooter.zeroTurret) {Shooter.zeroTurret = false} else {Shooter.zeroTurret = true}
-            }     }
+            }
+    }
 
     override fun onUpdate() {
         super.onUpdate()
         BindingManager.update()
+
+        visionSystem.periodic()
+
         telemetry.addData("Turret pos", Shooter.turret.currentPosition)
         telemetry.addData("turret target", Shooter.turretController.goal.position)
         telemetry.addData("turret power", Shooter.turret.power)
@@ -149,9 +160,13 @@ class MainTeleop : NextFTCOpMode() {
         telemetry.addData("Y", follower.pose.y)
         telemetry.addData("HEADING", Math.toDegrees(follower.heading))
         telemetry.addData("intake velo", Transfer.intakeMotor.velocity)
+
+        telemetry.addData("Limelight Final X", visionSystem.actualPose.x)
+        telemetry.addData("Limelight Final Y", visionSystem.actualPose.y)
+
         telemetry.update()
     }
 
     override fun onStop() {
     }
- }
+}
