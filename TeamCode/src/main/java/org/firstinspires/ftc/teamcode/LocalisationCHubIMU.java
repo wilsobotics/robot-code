@@ -1,13 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.pedropathing.follower.Follower;
 import com.pedropathing.ftc.InvertedFTCCoordinates;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
@@ -15,27 +17,27 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.ftc.PoseConverter;
-import com.pedropathing.ftc.FTCCoordinates;
 import com.pedropathing.geometry.PedroCoordinates;
 
-/* How to use this class:
-1. In another class, extend Localisation
-2. Use the method "initLocalisationHardware()" in the init() of the OpMode
-3. Use the "startLocalisation()" between the init() and loop() in the start()
-4. Use "updateLocalisation()" in the loop() of the OpMode
-5. Use "getPedroLocation()" wherever you want pedro coordinates
- */
+import dev.nextftc.core.subsystems.Subsystem;
 
-public abstract class LocalisationCHubIMU extends OpMode {
+public class LocalisationCHubIMU implements Subsystem {
 
     public Limelight3A limelight;
-    public com.pedropathing.follower.Follower follower;
+    public Follower follower;
+
+    // ADDED: The telemetry container
+    public Telemetry telemetry;
 
     public IMU controlHubImu;
 
     public Pose actualPose = new Pose(0, 0);
 
-    public void initLocalisationHardware() {
+    public LocalisationCHubIMU(HardwareMap hardwareMap, Telemetry telemetry, Follower follower){
+        // FIXED AMNESIA: Catching the tools
+        this.follower = follower;
+        this.telemetry = telemetry;
+
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.pipelineSwitch(8);
 
@@ -50,13 +52,12 @@ public abstract class LocalisationCHubIMU extends OpMode {
 
         controlHubImu.initialize(parameters);
         controlHubImu.resetYaw(); // Zero the gyro on init
-    }
 
-    public void startLocalisation() {
         limelight.start();
     }
 
-    public void updateLocalisation() {
+    @Override
+    public void periodic() {
 
         // Grab the heading directly from the Control Hub IMU
         double headingDegrees = controlHubImu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);

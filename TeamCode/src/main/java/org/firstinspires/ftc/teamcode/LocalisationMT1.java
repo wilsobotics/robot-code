@@ -1,18 +1,25 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.pedropathing.follower.Follower;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-public abstract class LocalisationMT1 extends OpMode {
+import dev.nextftc.core.subsystems.Subsystem;
+
+public class LocalisationMT1 implements Subsystem {
 
     public Limelight3A limelight;
-    public com.pedropathing.follower.Follower follower;
+    public Follower follower;
+
+    // ADDED: You need a place to store the injected telemetry
+    public Telemetry telemetry;
 
     // MT1 Filter Thresholds
     public double minimumTa = 0.2;
@@ -24,20 +31,13 @@ public abstract class LocalisationMT1 extends OpMode {
     private ArrayList<Double> yBuffer = new ArrayList<>();
     private final int FILTER_SIZE = 5;
 
-    //@Override
-    public void init() {
-    }
+    public LocalisationMT1(HardwareMap hardwareMap, Telemetry telemetry, Follower follower){
+        // FIXED AMNESIA: Saving the injected tools rn
+        this.follower = follower;
+        this.telemetry = telemetry;
 
-    //@Override
-    public void loop() {
-    }
-
-    public void initHardware(){
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.pipelineSwitch(8);
-    }
-
-    public void startLimelight(){
         limelight.start();
     }
 
@@ -55,7 +55,8 @@ public abstract class LocalisationMT1 extends OpMode {
         return sortedBuffer.get(sortedBuffer.size() / 2);
     }
 
-    public void updateLocation(){
+    @Override
+    public void periodic(){
         LLResult llResult = limelight.getLatestResult();
 
         if(llResult != null && llResult.isValid()){
@@ -100,7 +101,5 @@ public abstract class LocalisationMT1 extends OpMode {
         else{
             telemetry.addData("Limelight Pose", false);
         }
-
-        telemetry.update();
     }
 }
