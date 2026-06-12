@@ -156,7 +156,7 @@ class Auto12close : NextFTCOpMode() {
 
     val autonomousRoutine: Command
         get() = SequentialGroup(
-            ParallelGroup(FollowPath(shootPreload), SequentialGroup(Delay(0.5), shoot),
+            ParallelGroup(FollowPath(shootPreload), SequentialGroup(Delay(0.5), shoot)),
 
                 FollowPath(intakeMiddleSpike),
                 Transfer.rest,
@@ -172,7 +172,7 @@ class Auto12close : NextFTCOpMode() {
                 FollowPath(shootFirstSpike),
                 shoot,
             )
-        )
+
 
 
     override fun onStartButtonPressed() {
