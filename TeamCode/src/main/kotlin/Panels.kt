@@ -1,13 +1,10 @@
 import com.bylazar.field.PanelsField
 import com.bylazar.telemetry.PanelsTelemetry
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
-import sotm.Evan
 import subsystems.Shooter.evanResult
 import subsystems.Shooter.flywheel
-import subsystems.Shooter.flywheelController
 import subsystems.Shooter.turret
 import subsystems.Shooter.turretController
-import kotlin.math.cos
 
 object Panels {
     val panelsTelemetry = PanelsTelemetry.telemetry
@@ -21,7 +18,7 @@ object Panels {
         panelsTelemetry.addData("Xvelo", follower.velocity.xComponent)
         panelsTelemetry.addData("Yvelo", follower.velocity.yComponent)
         panelsTelemetry.addData("Yaw", Math.toDegrees(follower.pose.heading))
-        panelsTelemetry.addData("Target hood", evanResult.targetHoodPos)
+        panelsTelemetry.addData("Target hood", evanResult.targetHoodAngle)
         panelsTelemetry.addData("Flywheel power", flywheel.power)
         panelsTelemetry.update()
     }

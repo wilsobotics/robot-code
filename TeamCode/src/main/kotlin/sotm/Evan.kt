@@ -2,6 +2,8 @@ package sotm
 
 import kotlin.math.atan2
 import kotlin.math.cos
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
@@ -15,7 +17,7 @@ object Evan {
     class EvanResult (
         var targetRPM: Double = 0.0,
         var targetTurretPos: Double = 0.0,
-        var targetHoodPos: Double = 0.0,
+        var targetHoodAngle: Double = 0.0,
         var distance: Double = 0.0
     )
 
@@ -70,10 +72,10 @@ object Evan {
         result.targetTurretPos = turretPos
         result.distance = distance
         if (distance < 2.7) {
-            result.targetHoodPos = KtConstants.HOOD_CLOSE_POS
-            KtConstants.FLYWHEEL_TOLERANCE = 85.0
+            result.targetHoodAngle = min(max(KtConstants.HOOD_CLOSE_ANGLE - (distance-1)*20, KtConstants.HOOD_FAR_ANGLE), KtConstants.HOOD_CLOSE_ANGLE)
+            KtConstants.FLYWHEEL_TOLERANCE = 50.0
         } else {
-            result.targetHoodPos = KtConstants.HOOD_FAR_POS
+            result.targetHoodAngle = KtConstants.HOOD_FAR_ANGLE
             result.targetRPM = 1500.0
             KtConstants.FLYWHEEL_TOLERANCE = 100.0
         }
@@ -81,7 +83,7 @@ object Evan {
 
     fun velocityToRpm(velocity: Double): Double {
 
-        return (velocity)*187+75.32
+        return (velocity)*200+75.32
     }
 
     fun yawToPos(yaw: Double): Double {

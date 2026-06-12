@@ -8,8 +8,8 @@ class KtConstants {
         // GOAL + ROBOT dimensions
         const val GOAL_HEIGHT = 40
         const val MARROW_THRESHOLD = 1.0
-        @JvmStatic var GOAL_X = 145.0
-        @JvmStatic var GOAL_Y = 140.0
+        @JvmStatic var GOAL_X = 144.0
+        @JvmStatic var GOAL_Y = 144.0
         @JvmStatic var TURRET_SWITCH_ENCODER = -1
         const val SHOOTER_HEIGHT = 15.5
         @JvmStatic var RESET_POS = Pose(108.0, 136.0, Math.toRadians(0.0))
@@ -31,35 +31,35 @@ class KtConstants {
         @JvmField
         var DOOR_OPEN = 1.0
         @JvmField
-        var DOOR_CLOSE = 0.83
+        var DOOR_CLOSE = 0.7
 
         // Shooter constants
         const val TICKS_PER_DEGREE = 4.0
         @JvmField
         var FLYWHEEL_TOLERANCE = 75.0
         const val ROBOT_RADIUS = 10.0
-        const val TURRET_TOLERANCE = 2.0
+        const val TURRET_TOLERANCE = 5.0
         const val TURRET_ENCODER_LIMIT = 400.0
 
         @JvmField
         var HOOD_CLOSE_POS = 0.0
-        var HOOD_FAR_POS = 0.53
+        var HOOD_FAR_POS = 0.95
         var HOOD_CLOSE_ANGLE = 65.0
-        var HOOD_FAR_ANGLE = 45.0
+        var HOOD_FAR_ANGLE = 43.0
 
-        const val FLYWHEEL_KP = 0.01
+        const val FLYWHEEL_KP = 0.015
         const val FLYWHEEL_KI = 0.0
         const val FLYWHEEL_KD = 0.0
-        const val FLYWHEEL_KV = 0.001
+        const val FLYWHEEL_KV = 0.0005
         const val FLYWHEEL_KA = 0.0
-        const val FLYWHEEL_KS = 0.15
+        const val FLYWHEEL_KS = 0.05
 
-        const val TURRET_KP = 0.08
+        const val TURRET_KP = 0.035
         const val TURRET_KI = 0.0
-        const val TURRET_KD = 0.0
+        const val TURRET_KD = 0.0002
         const val TURRET_KV = 0.0
         const val TURRET_KA = 0.0
-        const val TURRET_KS = 0.1
+        const val TURRET_KS = 0.0
 
         @JvmStatic var currentPose = Pose(0.0, 0.0, 0.0)
 

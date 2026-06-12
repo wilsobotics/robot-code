@@ -38,8 +38,8 @@ public class Constants {
     public static PathConstraints pathConstraints = new PathConstraints(0.96, 100, 1, 1);
 
     public static PinpointConstants localizerConstants = new PinpointConstants()
-            .forwardPodY(2.79)
-            .strafePodX(-6.25)
+            .forwardPodY(3.874767)
+            .strafePodX(-2.04767767676767)
             .distanceUnit(DistanceUnit.INCH)
             .hardwareMapName("pinpoint")
             .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)

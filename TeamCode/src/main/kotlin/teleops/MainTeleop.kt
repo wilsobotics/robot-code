@@ -39,6 +39,18 @@ class MainTeleop : NextFTCOpMode() {
 
     // see if these methods work
     override fun onStartButtonPressed() {
+        val ledsManager = LambdaCommand()
+            .setStart {
+                if (Transfer.threeBalls) {
+                    if (Shooter.canShoot()) {
+                        Leds.readyToShoot()
+                    } else {
+                        Leds.intake3()
+                    }
+                } else {
+                    Leds.neutral()
+                }
+            }
         var autoShoot = false
         Shooter.turnFlywheelOn()
         follower.setStartingPose(Pose(KtConstants.ROBOT_X, KtConstants.ROBOT_Y, KtConstants.ROBOT_HEADING))
@@ -60,11 +72,13 @@ class MainTeleop : NextFTCOpMode() {
             )
             driverControlled()
         }
+        Gamepads.gamepad1.leftStickX.atMost(0.5)
+        Gamepads.gamepad1.leftStickX.atMost(0.5)
         BindingManager.layer = "intake"
 
         button { Shooter.canShoot() }
-            .whenBecomesTrue { Leds.readyToShoot }
-            .whenBecomesFalse { Leds.neutral }
+            .whenBecomesTrue { Leds.readyToShoot() }
+            .whenBecomesFalse { ledsManager() }
 
         button { gamepad1.right_bumper }
             .whenBecomesTrue {
@@ -73,8 +87,13 @@ class MainTeleop : NextFTCOpMode() {
             }
             .whenBecomesFalse{
                 Transfer.rest()
-                Leds.neutral()
+                ledsManager()
             }
+
+        button { Transfer.threeBalls }
+            .whenBecomesTrue { Leds.intake3() }
+            .whenBecomesFalse { Leds.neutral() }
+
         button { gamepad1.dpad_left }
             .whenBecomesTrue {
                 Transfer.rest()
@@ -93,7 +112,7 @@ class MainTeleop : NextFTCOpMode() {
                 Leds.neutral()
             }
 
-        button { gamepad1.left_trigger > 0.3 }
+        button { gamepad1.left_bumper }
             .whenBecomesTrue {
                 Transfer.intakeMotor.power = 1.0
             }
@@ -126,6 +145,10 @@ class MainTeleop : NextFTCOpMode() {
         telemetry.addData("flywheel velo", Shooter.flywheel.velocity)
         telemetry.addData("flywheel target", Shooter.flywheelController.goal.velocity)
         telemetry.addData("in launch zone", robotZone.isInside(closeLaunchZone) || robotZone.isInside(farLaunchZone))
+        telemetry.addData("X", follower.pose.x)
+        telemetry.addData("Y", follower.pose.y)
+        telemetry.addData("HEADING", Math.toDegrees(follower.heading))
+        telemetry.addData("intake velo", Transfer.intakeMotor.velocity)
         telemetry.update()
     }
 

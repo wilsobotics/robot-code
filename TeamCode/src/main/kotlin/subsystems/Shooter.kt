@@ -91,11 +91,7 @@ object Shooter : Subsystem {
                 follower.velocity.xComponent * 0.0254,
                 evanResult
             )
-            hood_angle = if (evanResult.targetHoodPos == KtConstants.HOOD_CLOSE_POS) {
-                KtConstants.HOOD_CLOSE_ANGLE
-            } else {
-                KtConstants.HOOD_FAR_ANGLE
-            }
+            hood_angle = evanResult.targetHoodAngle
 
             // 1. Get current robot heading in radians
             val currentHeadingRad = follower.heading
@@ -121,7 +117,7 @@ object Shooter : Subsystem {
             val turretPower = turretController.calculate(turret.state)
             turret.power = -turretPower * KtConstants.TURRET_SWITCH_ENCODER
 
-            hood.position = evanResult.targetHoodPos
+            hood.position = KtConstants.HOOD_CLOSE_POS + (evanResult.targetHoodAngle - KtConstants.HOOD_CLOSE_ANGLE) * (KtConstants.HOOD_FAR_POS - KtConstants.HOOD_CLOSE_POS) / (KtConstants.HOOD_FAR_ANGLE - KtConstants.HOOD_CLOSE_ANGLE)
 
             if (powerFlywheel) {
                 flywheelController.goal = KineticState(0.0, evanResult.targetRPM)
